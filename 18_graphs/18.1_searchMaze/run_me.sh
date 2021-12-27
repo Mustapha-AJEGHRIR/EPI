@@ -1,0 +1,1 @@
+python 18.1_searchMaze.py < maze1.txt | tee output | cat
