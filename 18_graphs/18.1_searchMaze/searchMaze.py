@@ -1,4 +1,10 @@
 """
+    Input : 
+        The input file should be a text file with the following format :
+            "number of rows" "number of columns"
+            "start row" "start column"
+            "end row" "end column"
+            "rows of the map, each row is a string of '.' and '#' characters, "." is walkable, "#" is not"
     Concernants indexation:
         the maze mape is index as the following (row, col), (0,0) is the top left corner and (n-1, m-1) is the bottom right corner
 """
