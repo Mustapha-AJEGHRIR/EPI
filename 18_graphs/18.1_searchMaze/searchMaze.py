@@ -10,6 +10,9 @@
 """
 import numpy as np
 import os
+import collections
+import matplotlib.pyplot as plt
+from numpy.lib.shape_base import dsplit
 
 # Some constents
 UP = np.array([-1, 0])
@@ -97,15 +100,71 @@ def build_graph(maze_map : np.ndarray, s : np.ndarray, e : np.ndarray) -> tuple[
                         E.add((tuple(pos), tuple(pos + index * d), index))
                         E.add((tuple(pos + index * d), tuple(pos), index))
     return V, E
-            
-    
-    
 
+def graph_connexion(E: set[tuple]) -> dict[tuple, set[tuple]]:
+    """
+    Returns the connexion graph from the set E
+    """
+    graph = collections.defaultdict(set)
+    for (u, v, d) in E:
+        graph[u].add((v, d))
+        graph[v].add((u, d))
+    return graph
+
+
+def djisktra(V : np.ndarray, E_set : set[tuple], s : np.ndarray, e : np.ndarray):
+    """
+    Returns the shortest path from s to e in the maze_map
+    """
+    E = graph_connexion(E_set)
+    node = tuple(s)
+    distances = {node: (0, None)}
+    frontier = {node}
+    while frontier:
+        node = min(frontier, key = lambda x: distances[x][0])
+        frontier.remove(node)
+        current_dist = distances[node][0]
+        neighbors = E[node]
+        for neighbor in neighbors:
+            new_dist = current_dist + neighbor[1]
+            if neighbor[0] not in distances or new_dist < distances[neighbor[0]][0]:
+                distances[neighbor[0]] = (new_dist, node)
+                frontier.add(neighbor[0])
+    return distances
+
+
+def build_path(distances : dict[tuple, tuple], e : np.ndarray) -> list[tuple]:
+    """
+    Returns the shortest path from s to e in the maze_map
+    """
+    path = []
+    node = tuple(e)
+    while node != None:
+        path.append(node)
+        node = distances[node][1]
+    path.reverse()
+    return path
+
+def plot_path_save(path : list[tuple], maze_map : np.ndarray, name="maze_shortest_path.png", dpi =300):
+    """
+    Plots the path in the maze_map
+    """
+    n, m = maze_map.shape
+    plt.imshow(~maze_map, cmap = "Greys", interpolation = "none")
+    plt.plot(path[0][1], path[0][0], "o", color = "red")
+    plt.plot(path[-1][1], path[-1][0], "o", color = "red")
+    for i in range(1, len(path)):
+        plt.plot([path[i-1][1], path[i][1]], [path[i-1][0], path[i][0]], color = "red")
+    plt.savefig(name, dpi=dpi)
+    plt.show()
 
 if __name__ == "__main__":
     # s represents the start position, e represents the end position
     maze_map, s, e = read_map_from_input()
     V, E = build_graph(maze_map, s, e)
+    path = build_path(djisktra(V, E, s, e), e)
+    plot_path_save(path, maze_map)
+
 
     
     
