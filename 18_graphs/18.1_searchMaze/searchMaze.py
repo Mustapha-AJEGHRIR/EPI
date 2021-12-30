@@ -111,7 +111,6 @@ def graph_connexion(E: set[tuple]) -> dict[tuple, set[tuple]]:
         graph[v].add((u, d))
     return graph
 
-
 def djisktra(V : np.ndarray, E_set : set[tuple], s : np.ndarray, e : np.ndarray):
     """
     Returns the shortest path from s to e in the maze_map
@@ -131,7 +130,6 @@ def djisktra(V : np.ndarray, E_set : set[tuple], s : np.ndarray, e : np.ndarray)
                 distances[neighbor[0]] = (new_dist, node)
                 frontier.add(neighbor[0])
     return distances
-
 
 def build_path(distances : dict[tuple, tuple], e : np.ndarray) -> list[tuple]:
     """
@@ -158,12 +156,15 @@ def plot_path_save(path : list[tuple], maze_map : np.ndarray, name="maze_shortes
     plt.savefig(name, dpi=dpi)
     plt.show()
 
-if __name__ == "__main__":
-    # s represents the start position, e represents the end position
-    maze_map, s, e = read_map_from_input()
+def execute(path = os.path.join(os.path.dirname(__file__), "maze1.txt"), name = "maze_shortest_path.png", dpi = 300):
+    maze_map, s, e = read_map_from_input(path)
     V, E = build_graph(maze_map, s, e)
     path = build_path(djisktra(V, E, s, e), e)
-    plot_path_save(path, maze_map)
+    plot_path_save(path, maze_map, name, dpi)
+
+if __name__ == "__main__":
+    # s represents the start position, e represents the end position
+    execute(os.path.join(os.path.dirname(__file__), "maze2.txt"), "maze_shortest_path2.png", 300)
 
 
     
